@@ -7,9 +7,9 @@ import time
 maxFreq = 10000
 minFreq = 20
 height = 1024
-width = 200
-displayTime = 10
-interval = 1000 // (width/10)
+width = 100
+displayTime = 5
+interval = 1000 // (width/displayTime)
 maxDb=10
 minDb=-60
 
@@ -53,18 +53,18 @@ while True:
     display[:,-1] = data
     ax.set_data(display)
 
-    dotsPerSec = width // 10
+    dotsPerSec = width // displayTime
     xStart = (-frame) % dotsPerSec
-    xPos = np.arange(10) * dotsPerSec + xStart
+    xPos = np.arange(displayTime) * dotsPerSec + xStart
 
-    plt.xticks(xPos, np.arange(10) + frame // dotsPerSec + (-1 if frame % dotsPerSec == 0 else 0))
+    plt.xticks(xPos, np.arange(displayTime) + frame // dotsPerSec + (-1 if frame % dotsPerSec == 0 else 0))
     plt.yticks(np.arange(10) * 100)
     frame += 1
     plt.draw()
 
     # plt.pause(interval/1000-(stopTime - startTime))
-    plt.pause(0.0001)
+    plt.pause(0.001)
     stopTime = time.time()
-    if frame % (width // 10) == 0:
+    if frame % (width // displayTime) == 0:
         print(startTime)
     time.sleep(max(0, interval/1000-(stopTime - startTime)))
