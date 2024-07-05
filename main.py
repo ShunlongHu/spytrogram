@@ -62,7 +62,6 @@ while True:
     frame += 1
     plt.draw()
 
-    # plt.pause(interval/1000-(stopTime - startTime))
     plt.pause(0.001)
     stopTime = time.time()
     if frame % (width // displayTime) == 0:
