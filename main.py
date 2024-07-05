@@ -53,9 +53,9 @@ print(freqIdx)
 print(((maxFreq/minFreq)**(np.array(freqIdx)/height) * minFreq))
 def updateRecordData():
     global data
-    samplingRate = 96000 * 2
+    samplingRate = 48000
     chunk = 1024
-    cacheSize = 8196 * 4
+    cacheSize = 8196
 
     xp = np.linspace(0, samplingRate/2, cacheSize//2 + 1)[:-1]
     x = freqCoord
