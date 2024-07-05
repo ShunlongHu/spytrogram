@@ -7,7 +7,7 @@ import time
 maxFreq = 10000
 minFreq = 20
 height = 1024
-width = 200
+width = 100
 displayTime = 10
 interval = 1000 // (width/displayTime)
 maxDb=0
@@ -25,11 +25,13 @@ for f in range(minFreq, maxFreq):
         freqPoint += [f if fStr[0] == '1' else '']
         idx = np.log10(f / minFreq) / np.log10((maxFreq/minFreq)) * height
         freqIdx += [idx]
+freqPoint += [str(maxFreq)]
+freqIdx += [height]
 print(freqIdx)
 print(freqPoint)
 
-tonePoint = []
-toneIdx = []
+tonePoint = ['']
+toneIdx = [0]
 for t in range(-3, 4):
     for p in [0, 2, 4, 5, 7, 9, 11]:
         tone = t * 12 + p
@@ -41,12 +43,17 @@ for t in range(-3, 4):
             tonePoint += ['']
         print(f)
         toneIdx += [np.log10(f / minFreq) / np.log10((maxFreq/minFreq)) * height]
+
+tonePoint += ['']
+toneIdx += [height]
 print(tonePoint)
 print(toneIdx)
 print(((maxFreq/minFreq)**(np.array(toneIdx)/height) * minFreq))
+print(freqIdx)
+print(((maxFreq/minFreq)**(np.array(freqIdx)/height) * minFreq))
 def updateRecordData():
     global data
-    samplingRate = 96000
+    samplingRate = 96000 * 2
     chunk = 1024
     cacheSize = 8196 * 4
 
@@ -72,10 +79,11 @@ ax=plt.imshow(display, interpolation="bilinear", vmax=maxDb, vmin=minDb, cmap="m
 plt.gca().invert_yaxis()
 plt.ion()
 plt.show()
-# plt.grid()
+plt.grid()
 plt.yticks(freqIdx, freqPoint)
 plt.gca().twinx()
 plt.yticks(toneIdx, tonePoint)
+# plt.grid()
 frame = 0
 while True:
     startTime = time.time()
