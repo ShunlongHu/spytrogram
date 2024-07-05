@@ -61,9 +61,7 @@ while True:
     plt.yticks(np.arange(10) * 100)
     frame += 1
     plt.draw()
-
-    plt.pause(0.001)
     stopTime = time.time()
     if frame % (width // displayTime) == 0:
         print(startTime)
-    time.sleep(max(0, interval/1000-(stopTime - startTime)))
+    plt.pause(max(0, interval/1000-(stopTime - startTime)))
