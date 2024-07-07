@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import threading
 import pyaudio
 import time
+import scipy.signal
 
 maxFreq = 10000
 minFreq = 20
@@ -57,19 +58,22 @@ def updateRecordData():
     chunk = 1024
     cacheSize = 8196
 
-    xp = np.linspace(0, samplingRate/2, cacheSize//2 + 1)[:-1]
-    x = freqCoord
-
+    freqDiff = freqCoord * 1.0
+    freqDiff[1:] = (freqCoord[1:] - freqCoord[:-1]) / 2
+    freqDiff[0] = freqCoord[1] - freqCoord[0]
+    kernal = np.zeros((height, cacheSize), complex)
+    hanning=np.hanning(cacheSize)
+    for idx in range(height):
+        # kernal[idx] = scipy.signal.firwin(cacheSize, [freqCoord[idx] - freqDiff[idx], freqCoord[idx] + freqDiff[idx]], pass_zero=False, fs=samplingRate)
+        kernal[idx] = np.exp(-1j*2*np.pi*freqCoord[idx]/samplingRate*np.arange(cacheSize)) / cacheSize * hanning
     p = pyaudio.PyAudio()
     stream = p.open(format=pyaudio.paFloat32, channels=1, rate=samplingRate, frames_per_buffer=chunk, input=True)
     cache = np.zeros(cacheSize)
-    hanning=np.hanning(cacheSize)
     while True:
         audio = stream.read(chunk)
         cache[:cacheSize-chunk] = cache[chunk:]
         cache[cacheSize-chunk:] = np.frombuffer(audio, dtype=np.float32)
-        freq = np.log10(np.abs(np.fft.fft(cache*hanning, norm="forward")[:cacheSize//2]))*10
-        data = np.interp(x, xp, freq)
+        data = np.log10(np.abs(kernal.dot(cache)))*10
 
 recorder = threading.Thread(target=updateRecordData)
 recorder.start()
